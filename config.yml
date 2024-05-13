@@ -98,7 +98,6 @@ homebrew_installed_packages:
   - zsh
 
 homebrew_taps:
-  - homebrew/core
   - hashicorp/tap
 
 homebrew_cask_appdir: /Applications
