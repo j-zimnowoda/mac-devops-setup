@@ -17,6 +17,24 @@ set +a
 ansible-playbook setup-my-mac.yml -i inventory -K
 ```
 
+To run only the GPG role:
+
+```sh
+set -a
+source .env
+set +a
+ansible-playbook setup-my-mac.yml -i inventory --tags gpg
+```
+
+To run only the SSH role:
+
+```sh
+set -a
+source .env
+set +a
+ansible-playbook setup-my-mac.yml -i inventory --tags ssh
+```
+
 You can customize setup editing `config.yml` config file.
 
 
@@ -29,6 +47,10 @@ The complete list of softwares installed is in `config.yml` , but in summary her
     Docker, Vagrant, slack, 1password, postman,...
 
 - Manage dotfiles from this repository into $HOME/dotfiles and symlink them into $HOME.
+
+- Generate a GPG key (with passphrase from `.env`) and store the passphrase in macOS Keychain.
+
+- Generate an SSH key (with passphrase from `.env`) and add it to the macOS Keychain.
 
 - Configure terminal
 

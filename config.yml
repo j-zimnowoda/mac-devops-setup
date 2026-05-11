@@ -2,8 +2,10 @@
 configure_terminal: yes
 configure_osx: yes
 configure_dotfiles: yes
+configure_gpg: yes
+configure_ssh: yes
 
-dotfiles_repo_local_destination: ~/dotfiles
+dotfiles_repo_local_destination: "{{ dotfiles_host_home }}/dotfiles"
 dotfiles_files:
   - .aliases
   - .zshrc
@@ -17,6 +19,13 @@ gitconfig_name: "{{ lookup('ansible.builtin.env', 'GITCONFIG_NAME', default='') 
 gitconfig_email: "{{ lookup('ansible.builtin.env', 'GITCONFIG_EMAIL', default='') }}"
 gitconfig_signingkey: "{{ lookup('ansible.builtin.env', 'GITCONFIG_SIGNINGKEY', default='') }}"
 gitconfig_github_user: "{{ lookup('ansible.builtin.env', 'GITCONFIG_GITHUB_USER', default='') }}"
+
+gpg_key_name: "{{ lookup('ansible.builtin.env', 'GPG_KEY_NAME', default=gitconfig_name) }}"
+gpg_key_email: "{{ lookup('ansible.builtin.env', 'GPG_KEY_EMAIL', default=gitconfig_email) }}"
+gpg_key_passphrase: "{{ lookup('ansible.builtin.env', 'GPG_KEY_PASSPHRASE', default='') }}"
+
+ssh_key_comment: "{{ lookup('ansible.builtin.env', 'SSH_KEY_COMMENT', default=gitconfig_email) }}"
+ssh_key_passphrase: "{{ lookup('ansible.builtin.env', 'SSH_KEY_PASSPHRASE', default='') }}"
 
 homebrew_installed_packages:
   # Dev

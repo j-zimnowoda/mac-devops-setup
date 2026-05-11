@@ -7,6 +7,10 @@
 
   roles:
     - role: setup_homebrew
+    - role: setup_gpg
+      when: configure_gpg
+    - role: setup_ssh
+      when: configure_ssh
     - role: setup_dotfiles
       when: configure_dotfiles
     - role: setup_terminal
