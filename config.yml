@@ -4,6 +4,7 @@ configure_osx: yes
 configure_dotfiles: yes
 configure_gpg: yes
 configure_ssh: yes
+configure_github_keys: yes
 
 dotfiles_repo_local_destination: "{{ dotfiles_host_home }}/dotfiles"
 dotfiles_files:
@@ -26,6 +27,8 @@ gpg_key_passphrase: "{{ lookup('ansible.builtin.env', 'GPG_KEY_PASSPHRASE', defa
 
 ssh_key_comment: "{{ lookup('ansible.builtin.env', 'SSH_KEY_COMMENT', default=gitconfig_email) }}"
 ssh_key_passphrase: "{{ lookup('ansible.builtin.env', 'SSH_KEY_PASSPHRASE', default='') }}"
+github_gpg_key_title: "{{ lookup('ansible.builtin.env', 'GH_GPG_KEY_TITLE', default='Mac DevOps GPG Key') }}"
+github_ssh_key_title: "{{ lookup('ansible.builtin.env', 'GH_SSH_KEY_TITLE', default='Mac DevOps SSH Key') }}"
 
 homebrew_installed_packages:
   # Dev

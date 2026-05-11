@@ -1,0 +1,7 @@
+---
+github_keys_home: "{{ ansible_env.HOME | default(lookup('ansible.builtin.env', 'HOME')) }}"
+github_keys_gpg_export_email: "{{ gpg_key_email | default(gitconfig_email | default('')) }}"
+github_keys_gpg_title: "Mac DevOps GPG Key"
+github_keys_ssh_public_key_path: "{{ github_keys_home }}/.ssh/id_ed25519.pub"
+github_keys_ssh_title: "Mac DevOps SSH Key"
+github_keys_ssh_type: authentication

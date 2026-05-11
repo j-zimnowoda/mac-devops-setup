@@ -1,0 +1,98 @@
+---
+- name: Check that gh CLI is installed.
+  command: gh --version
+  register: gh_version
+  changed_when: false
+  failed_when: gh_version.rc != 0
+  tags: github_keys
+
+- name: Check gh authentication status.
+  command: gh auth status
+  register: gh_auth_status
+  changed_when: false
+  failed_when: gh_auth_status.rc != 0
+  tags: github_keys
+
+- name: Validate required key upload variables.
+  assert:
+    that:
+      - github_keys_gpg_export_email | length > 0
+      - github_keys_gpg_title | length > 0
+      - github_keys_ssh_title | length > 0
+    fail_msg: "Set GPG key email and GitHub key titles before running GitHub key upload role."
+  tags: github_keys
+
+- name: Ensure SSH public key exists before upload.
+  stat:
+    path: "{{ github_keys_ssh_public_key_path }}"
+  register: github_ssh_pubkey_stat
+  tags: github_keys
+
+- name: Fail if SSH public key is missing.
+  assert:
+    that:
+      - github_ssh_pubkey_stat.stat.exists
+    fail_msg: "SSH public key not found at {{ github_keys_ssh_public_key_path }}. Run the SSH setup role first."
+  tags: github_keys
+
+- name: Read SSH public key content.
+  slurp:
+    src: "{{ github_keys_ssh_public_key_path }}"
+  register: github_ssh_pubkey_content
+  tags: github_keys
+
+- name: Export local GPG public key.
+  command: gpg --armor --export "{{ github_keys_gpg_export_email }}"
+  register: github_gpg_public_key
+  changed_when: false
+  failed_when: github_gpg_public_key.rc != 0 or github_gpg_public_key.stdout | trim | length == 0
+  tags: github_keys
+
+- name: Query GitHub GPG keys.
+  command: gh api user/gpg_keys --jq '.[].raw_key'
+  register: github_existing_gpg_keys
+  changed_when: false
+  failed_when: false
+  tags: github_keys
+
+- name: Write exported GPG key to temporary file.
+  tempfile:
+    state: file
+    suffix: .asc
+  register: github_gpg_tempfile
+  tags: github_keys
+
+- name: Persist exported GPG key into temporary file.
+  copy:
+    dest: "{{ github_gpg_tempfile.path }}"
+    mode: "0600"
+    content: "{{ github_gpg_public_key.stdout }}"
+  tags: github_keys
+
+- name: Upload GPG key to GitHub when missing.
+  command: >-
+    gh gpg-key add {{ github_gpg_tempfile.path | quote }} --title {{ github_gpg_key_title | default(github_keys_gpg_title) | quote }}
+  when: github_gpg_public_key.stdout | trim not in github_existing_gpg_keys.stdout
+  tags: github_keys
+
+- name: Query GitHub SSH keys.
+  command: gh api user/keys --jq '.[].key'
+  register: github_existing_ssh_keys
+  changed_when: false
+  failed_when: false
+  tags: github_keys
+
+- name: Upload SSH key to GitHub when missing.
+  command: >-
+    gh ssh-key add {{ github_keys_ssh_public_key_path | quote }}
+    --title {{ github_ssh_key_title | default(github_keys_ssh_title) | quote }}
+    --type {{ github_keys_ssh_type | quote }}
+  when: (github_ssh_pubkey_content.content | b64decode | trim) not in github_existing_ssh_keys.stdout
+  tags: github_keys
+
+- name: Remove temporary exported GPG key file.
+  file:
+    path: "{{ github_gpg_tempfile.path }}"
+    state: absent
+  when: github_gpg_tempfile.path is defined
+  tags: github_keys

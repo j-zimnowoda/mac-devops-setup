@@ -35,6 +35,15 @@ set +a
 ansible-playbook setup-my-mac.yml -i inventory --tags ssh
 ```
 
+To run only the GitHub key upload role:
+
+```sh
+set -a
+source .env
+set +a
+ansible-playbook setup-my-mac.yml -i inventory --tags github_keys
+```
+
 You can customize setup editing `config.yml` config file.
 
 
@@ -51,6 +60,8 @@ The complete list of softwares installed is in `config.yml` , but in summary her
 - Generate a GPG key (with passphrase from `.env`) and store the passphrase in macOS Keychain.
 
 - Generate an SSH key (with passphrase from `.env`) and add it to the macOS Keychain.
+
+- Upload generated GPG and SSH public keys to GitHub using the `gh` CLI.
 
 - Configure terminal
 
