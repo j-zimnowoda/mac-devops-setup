@@ -13,7 +13,7 @@
     dest: "{{ dotfiles_repo_local_destination }}/{{ item }}"
     mode: preserve
   become: no
-  loop: "{{ dotfiles_files | map('regex_replace', '/$', '') | reject('equalto', '.gitconfig') | list }}"
+  loop: "{{ dotfiles_files | map('regex_replace', '/$', '') | reject('equalto', '.gitconfig') | reject('equalto', '.zshrc') | list }}"
   tags: dotfiles
 
 - name: Ensure managed dotfiles directory is a git repository.
@@ -27,6 +27,13 @@
   template:
     src: gitconfig.j2
     dest: "{{ dotfiles_repo_local_destination }}/.gitconfig"
+    mode: "0644"
+  tags: dotfiles
+
+- name: Render templated .zshrc into managed directory.
+  template:
+    src: .zshrc
+    dest: "{{ dotfiles_repo_local_destination }}/.zshrc"
     mode: "0644"
   tags: dotfiles
 
