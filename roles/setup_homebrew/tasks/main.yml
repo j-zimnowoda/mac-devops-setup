@@ -1,4 +1,11 @@
 
+# Bootstrap.
+- name: Install Xcode Command Line Tools.
+  import_tasks: osx-commandline.yml
+
+- name: Install Homebrew.
+  import_tasks: install-homebrew.yml
+
 # Tap.
 - name: Ensure configured taps are tapped.
   community.general.homebrew_tap:
