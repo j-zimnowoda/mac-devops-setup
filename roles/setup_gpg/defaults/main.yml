@@ -1,0 +1,12 @@
+---
+gpg_home: "{{ ansible_env.HOME | default(lookup('ansible.builtin.env', 'HOME')) }}/.gnupg"
+gpg_key_name: ""
+gpg_key_email: ""
+gpg_key_passphrase: ""
+gpg_key_type: "rsa4096"
+gpg_key_usage: "sign,auth,encr"
+gpg_key_expire: "1y"
+gpg_pinentry_program_candidates:
+  - /opt/homebrew/bin/pinentry-mac
+  - /usr/local/bin/pinentry-mac
+gpg_keychain_service_name: "gpg-passphrase"

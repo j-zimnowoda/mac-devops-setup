@@ -1,0 +1,83 @@
+---
+- name: Validate required GPG key variables.
+  assert:
+    that:
+      - gpg_key_name | length > 0
+      - gpg_key_email | length > 0
+      - gpg_key_passphrase | length > 0
+    fail_msg: "Set GPG_KEY_NAME, GPG_KEY_EMAIL and GPG_KEY_PASSPHRASE in your .env file before running this role."
+  tags: gpg
+
+- name: Ensure GPG home directory exists.
+  file:
+    path: "{{ gpg_home }}"
+    state: directory
+    mode: "0700"
+  become: no
+  tags: gpg
+
+- name: Detect installed pinentry-mac program.
+  stat:
+    path: "{{ item }}"
+  loop: "{{ gpg_pinentry_program_candidates }}"
+  register: pinentry_candidate_stats
+  tags: gpg
+
+- name: Select first available pinentry-mac path.
+  set_fact:
+    gpg_pinentry_program: "{{ (pinentry_candidate_stats.results | selectattr('stat.exists', 'equalto', true) | map(attribute='item') | list | first) | default('') }}"
+  tags: gpg
+
+- name: Configure gpg-agent for macOS keychain integration.
+  copy:
+    dest: "{{ gpg_home }}/gpg-agent.conf"
+    mode: "0600"
+    content: |
+      default-cache-ttl 28800
+      max-cache-ttl 86400
+      {% if gpg_pinentry_program | length > 0 %}
+      pinentry-program {{ gpg_pinentry_program }}
+      {% endif %}
+  become: no
+  tags: gpg
+
+- name: Reload gpg-agent after config updates.
+  command: gpgconf --kill gpg-agent
+  changed_when: false
+  failed_when: false
+  become: no
+  tags: gpg
+
+- name: Check whether a secret key already exists for the configured email.
+  command: gpg --list-secret-keys --with-colons "{{ gpg_key_email }}"
+  register: existing_gpg_keys
+  changed_when: false
+  failed_when: false
+  become: no
+  tags: gpg
+
+- name: Generate GPG key when missing.
+  command: >-
+    gpg --batch --yes --pinentry-mode loopback
+    --passphrase {{ gpg_key_passphrase | quote }}
+    --quick-generate-key
+    {{ (gpg_key_name ~ ' <' ~ gpg_key_email ~ '>') | quote }}
+    {{ gpg_key_type | quote }}
+    {{ gpg_key_usage | quote }}
+    {{ gpg_key_expire | quote }}
+  when: "'sec:' not in existing_gpg_keys.stdout"
+  no_log: true
+  become: no
+  tags: gpg
+
+- name: Store GPG passphrase in macOS Keychain.
+  command: >-
+    security add-generic-password
+    -a {{ ansible_user_id | quote }}
+    -s {{ gpg_keychain_service_name | quote }}
+    -w {{ gpg_key_passphrase | quote }}
+    -U
+  no_log: true
+  changed_when: false
+  become: no
+  tags: gpg
