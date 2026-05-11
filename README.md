@@ -8,9 +8,12 @@ First of all clone or download this repository on you mac.
 
 ## 🚀 Usage
 
-Just run the following command at the root of this project and enter your account password when prompted.
+Create a `.env` file from `.env.example`, update values, then run:
 
 ```sh
+set -a
+source .env
+set +a
 ansible-playbook setup-my-mac.yml -i inventory -K
 ```
 
@@ -25,7 +28,7 @@ The complete list of softwares installed is in `config.yml` , but in summary her
 
     Docker, Vagrant, slack, 1password, postman,...
 
-- Clone my dotfile from github repository.
+- Manage dotfiles from this repository into $HOME/dotfiles and symlink them into $HOME.
 
 - Configure terminal
 

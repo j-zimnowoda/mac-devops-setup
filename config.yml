@@ -3,18 +3,20 @@ configure_terminal: yes
 configure_osx: yes
 configure_dotfiles: yes
 
-dotfiles_repo: "https://github.com/j-zimnowoda/dotfiles.git"
-dotfiles_repo_accept_hostkey: yes
 dotfiles_repo_local_destination: ~/dotfiles
 dotfiles_files:
   - .aliases
   - .zshrc
-  - .gitconfig
   - .vimrc
   - .osx
   - .functions
   - .iterm2_shell_integration.zsh
   - .inputrc
+
+gitconfig_name: "{{ lookup('ansible.builtin.env', 'GITCONFIG_NAME', default='') }}"
+gitconfig_email: "{{ lookup('ansible.builtin.env', 'GITCONFIG_EMAIL', default='') }}"
+gitconfig_signingkey: "{{ lookup('ansible.builtin.env', 'GITCONFIG_SIGNINGKEY', default='') }}"
+gitconfig_github_user: "{{ lookup('ansible.builtin.env', 'GITCONFIG_GITHUB_USER', default='') }}"
 
 homebrew_installed_packages:
   # Dev
