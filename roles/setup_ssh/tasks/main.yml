@@ -1,0 +1,65 @@
+---
+- name: Validate required SSH key variables.
+  assert:
+    that:
+      - ssh_key_comment | length > 0
+      - ssh_key_passphrase | length > 0
+    fail_msg: "Set SSH_KEY_COMMENT and SSH_KEY_PASSPHRASE in your .env file before running this role."
+  tags: ssh
+
+- name: Ensure SSH directory exists.
+  file:
+    path: "{{ ssh_dir }}"
+    state: directory
+    mode: "0700"
+  become: no
+  tags: ssh
+
+- name: Generate SSH private key when missing.
+  command: >-
+    ssh-keygen -t {{ ssh_key_type | quote }}
+    -f {{ ssh_key_path | quote }}
+    -C {{ ssh_key_comment | quote }}
+    -N {{ ssh_key_passphrase | quote }}
+  args:
+    creates: "{{ ssh_key_path }}"
+  no_log: true
+  become: no
+  tags: ssh
+
+- name: Ensure SSH public key permissions are secure.
+  file:
+    path: "{{ ssh_key_path }}.pub"
+    mode: "0644"
+  become: no
+  tags: ssh
+
+- name: Ensure SSH private key permissions are secure.
+  file:
+    path: "{{ ssh_key_path }}"
+    mode: "0600"
+  become: no
+  tags: ssh
+
+- name: Ensure SSH config enables keychain usage on macOS.
+  blockinfile:
+    path: "{{ ssh_dir }}/config"
+    create: true
+    mode: "0600"
+    marker: "# {mark} ANSIBLE MANAGED SSH KEYCHAIN"
+    block: |
+      Host *
+        AddKeysToAgent yes
+        UseKeychain yes
+        IdentityFile {{ ssh_key_path }}
+  become: no
+  tags: ssh
+
+- name: Add SSH private key to macOS keychain.
+  command: >-
+    ssh-add {{ ssh_keychain_add_command }} {{ ssh_key_path | quote }}
+  changed_when: false
+  failed_when: false
+  no_log: true
+  become: no
+  tags: ssh
