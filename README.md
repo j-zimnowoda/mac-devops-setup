@@ -8,13 +8,39 @@ First of all clone or download this repository on you mac.
 
 ## 🚀 Usage
 
-Just run the following command at the root of this project and enter your account password when prompted.
+Create `config.local.yml` from `config.local.yml.example`, update values, then run:
 
 ```sh
-ansible-playbook setup-my-mac.yml -i inventory -K
+ansible-playbook setup-my-mac.yml -i inventory
 ```
 
-You can customize setup editing `config.yml` config file.
+To run only the GPG role:
+
+```sh
+ansible-playbook setup-my-mac.yml -i inventory --tags gpg
+```
+
+To run only the SSH role:
+
+```sh
+ansible-playbook setup-my-mac.yml -i inventory --tags ssh
+```
+
+To run only the GitHub key upload role:
+
+```sh
+ansible-playbook setup-my-mac.yml -i inventory --tags github_keys
+```
+
+To preview changes without applying them (dry-run):
+
+```sh
+ansible-playbook setup-my-mac.yml -i inventory --check --diff
+```
+
+Use `-K` only when running tasks that require privilege escalation.
+
+You can customize setup in `config.yml` and override private values in `config.local.yml`.
 
 
 ## ✨What this playbook do
@@ -25,7 +51,13 @@ The complete list of softwares installed is in `config.yml` , but in summary her
 
     Docker, Vagrant, slack, 1password, postman,...
 
-- Clone my dotfile from github repository.
+- Manage dotfiles from this repository into $HOME/dotfiles and symlink them into $HOME.
+
+- Generate a GPG key (with passphrase from `config.local.yml`) and store the passphrase in macOS Keychain.
+
+- Generate an SSH key (with passphrase from `config.local.yml`) and add it to the macOS Keychain.
+
+- Upload generated GPG and SSH public keys to GitHub using the `gh` CLI.
 
 - Configure terminal
 

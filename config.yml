@@ -2,19 +2,33 @@
 configure_terminal: yes
 configure_osx: yes
 configure_dotfiles: yes
+configure_gpg: yes
+configure_ssh: yes
+configure_github_keys: yes
 
-dotfiles_repo: "https://github.com/j-zimnowoda/dotfiles.git"
-dotfiles_repo_accept_hostkey: yes
-dotfiles_repo_local_destination: ~/dotfiles
+dotfiles_repo_local_destination: "{{ dotfiles_host_home }}/dotfiles"
 dotfiles_files:
   - .aliases
   - .zshrc
-  - .gitconfig
   - .vimrc
   - .osx
   - .functions
   - .iterm2_shell_integration.zsh
   - .inputrc
+
+# gitconfig_name: ""
+# gitconfig_email: ""
+# gitconfig_signingkey: ""
+# gitconfig_github_user: ""
+
+# gpg_key_name: "{{ gitconfig_name }}"
+# gpg_key_email: "{{ gitconfig_email }}"
+# gpg_key_passphrase: ""
+
+# ssh_key_comment: "{{ gitconfig_email }}"
+# ssh_key_passphrase: ""
+# github_gpg_key_title: "Mac DevOps GPG Key"
+# github_ssh_key_title: "Mac DevOps SSH Key"
 
 homebrew_installed_packages:
   # Dev

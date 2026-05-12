@@ -1,12 +1,4 @@
 ---
-- name: Installing zsh package
-  homebrew:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - zsh
-  tags: terminal
-
 - name: Installing oh-my-zsh
   git:
     repo: https://github.com/robbyrussell/oh-my-zsh.git

@@ -1,0 +1,35 @@
+---
+- name: Check for Homebrew at Apple Silicon path.
+  stat:
+    path: /opt/homebrew/bin/brew
+  register: homebrew_brew_opt_bootstrap
+  tags: homebrew
+
+- name: Check for Homebrew at Intel path.
+  stat:
+    path: /usr/local/bin/brew
+  register: homebrew_brew_usr_local_bootstrap
+  tags: homebrew
+
+- name: Install Homebrew when not present.
+  shell: NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  when: not homebrew_brew_opt_bootstrap.stat.exists and not homebrew_brew_usr_local_bootstrap.stat.exists
+  tags: homebrew
+
+- name: Re-check for Homebrew at Apple Silicon path.
+  stat:
+    path: /opt/homebrew/bin/brew
+  register: homebrew_brew_opt_after_bootstrap
+  tags: homebrew
+
+- name: Re-check for Homebrew at Intel path.
+  stat:
+    path: /usr/local/bin/brew
+  register: homebrew_brew_usr_local_after_bootstrap
+  tags: homebrew
+
+- name: Fail when Homebrew installation did not produce a brew binary.
+  fail:
+    msg: Homebrew install finished but no brew binary was found in /opt/homebrew/bin or /usr/local/bin.
+  when: not homebrew_brew_opt_after_bootstrap.stat.exists and not homebrew_brew_usr_local_after_bootstrap.stat.exists
+  tags: homebrew

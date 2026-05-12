@@ -1,13 +1,12 @@
 ---
-dotfiles_repo: "https://github.com/DemisR/dotfiles.git"
-dotfiles_repo_accept_hostkey: no
-dotfiles_repo_local_destination: "~/Documents/dotfiles"
+dotfiles_source_local: "{{ playbook_dir }}/dotfiles"
+dotfiles_host_home: "{{ ansible_facts['env']['HOME'] | default(lookup('ansible.builtin.env', 'HOME')) }}"
+dotfiles_repo_local_destination: "{{ dotfiles_host_home }}/dotfiles"
 
-dotfiles_home: "~"
+dotfiles_home: "{{ dotfiles_host_home }}"
 dotfiles_files:
   - .aliases
   - .zshrc
-  - .gitconfig
   - .gitignore_global
   - .vimrc
   - .vim
@@ -15,3 +14,8 @@ dotfiles_files:
   - .functions
   - .vscode/
   - .gnupg/
+
+gitconfig_name: ""
+gitconfig_email: ""
+gitconfig_signingkey: ""
+gitconfig_github_user: ""

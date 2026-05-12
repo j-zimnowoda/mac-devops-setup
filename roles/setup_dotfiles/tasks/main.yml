@@ -1,34 +1,68 @@
 ---
-- name: Ensure dotfiles repository is cloned locally.
-  git:
-    repo: "{{ dotfiles_repo }}"
-    dest: "{{ dotfiles_repo_local_destination }}"
-    accept_hostkey: "{{ dotfiles_repo_accept_hostkey }}"
-  become: no
-  tags: dotfiles
-
-- name: Ensure all configured dotfiles are links.
-  shell: "ls -F {{ dotfiles_home }}/{{ item }}"
-  register: existing_dotfile_info
-  failed_when: false
-  check_mode: no
-  changed_when: false
-  with_items: "{{ dotfiles_files }}"
-  tags: dotfiles
-
-- name: Remove existing dotfiles file if a replacement is being linked.
+- name: Ensure managed dotfiles directory exists.
   file:
-    path: "{{ dotfiles_home }}/{{ dotfiles_files[item.0] }}"
-    state: absent
-  when: "'@' not in item.1.stdout"
-  with_indexed_items: "{{ existing_dotfile_info.results }}"
+    path: "{{ dotfiles_repo_local_destination }}"
+    state: directory
+    mode: "0755"
+  become: false
   tags: dotfiles
 
-- name: Link dotfiles into home folder.
+- name: Discover all templates for dotfiles.
+  find:
+    paths: "{{ role_path }}/templates"
+    recurse: true
+    hidden: true
+    file_type: file
+  register: discovered_templates
+  delegate_to: localhost
+  become: false
+  tags: dotfiles
+
+- name: Initialize templated dotfiles list.
+  set_fact:
+    templated_dotfiles: []
+  tags: dotfiles
+
+- name: Build templated dotfiles list from templates directory.
+  set_fact:
+    templated_dotfiles: "{{ templated_dotfiles + [template_relpath] }}"
+  vars:
+    template_relpath: "{{ item.path.split('/templates/', 1)[1] }}"
+  loop: "{{ discovered_templates.files | sort(attribute='path') }}"
+  tags: dotfiles
+
+- name: Ensure managed dotfiles directory is a git repository.
+  command: git init "{{ dotfiles_repo_local_destination }}"
+  args:
+    creates: "{{ dotfiles_repo_local_destination }}/.git"
+  become: false
+  tags: dotfiles
+
+- name: Ensure parent directories exist for templated dotfiles.
+  file:
+    path: "{{ dotfiles_repo_local_destination }}/{{ item }}"
+    state: directory
+    mode: "0755"
+  become: false
+  loop: "{{ templated_dotfiles | map('dirname') | reject('equalto', '.') | unique | list }}"
+  tags: dotfiles
+
+- name: Render discovered templates into managed directory.
+  template:
+    src: "{{ template_relpath }}"
+    dest: "{{ dotfiles_repo_local_destination }}/{{ template_relpath }}"
+    mode: "0644"
+  vars:
+    template_relpath: "{{ item.path.split('/templates/', 1)[1] }}"
+  loop: "{{ discovered_templates.files | sort(attribute='path') }}"
+  tags: dotfiles
+
+- name: Link configured dotfiles into home folder.
   file:
     src: "{{ dotfiles_repo_local_destination }}/{{ item }}"
     dest: "{{ dotfiles_home }}/{{ item }}"
     state: link
-  become: no
-  with_items: "{{ dotfiles_files }}"
+    force: true
+  become: false
+  loop: "{{ templated_dotfiles | unique }}"
   tags: dotfiles
