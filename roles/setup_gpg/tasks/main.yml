@@ -40,7 +40,7 @@
 - name: Store GPG passphrase in macOS Keychain.
   command: >-
     security add-generic-password
-    -a {{ ansible_user_id | quote }}
+    -a {{ ansible_facts['user_id'] | quote }}
     -s {{ gpg_keychain_service_name | quote }}
     -w {{ gpg_key_passphrase | quote }}
     -U

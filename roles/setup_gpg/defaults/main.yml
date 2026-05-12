@@ -1,5 +1,5 @@
 ---
-gpg_home: "{{ ansible_env.HOME | default(lookup('ansible.builtin.env', 'HOME')) }}/.gnupg"
+gpg_home: "{{ ansible_facts['env']['HOME'] | default(lookup('ansible.builtin.env', 'HOME')) }}/.gnupg"
 gpg_key_name: ""
 gpg_key_email: ""
 gpg_key_passphrase: ""
