@@ -7,3 +7,4 @@
 *.tmp
 *.swp
 .env
+config.local.yml

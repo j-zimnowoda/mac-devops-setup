@@ -8,52 +8,37 @@ First of all clone or download this repository on you mac.
 
 ## 🚀 Usage
 
-Create a `.env` file from `.env.example`, update values, then run:
+Create `config.local.yml` from `config.local.yml.example`, update values, then run:
 
 ```sh
-set -a
-source .env
-set +a
 ansible-playbook setup-my-mac.yml -i inventory -K
 ```
 
 To run only the GPG role:
 
 ```sh
-set -a
-source .env
-set +a
 ansible-playbook setup-my-mac.yml -i inventory --tags gpg
 ```
 
 To run only the SSH role:
 
 ```sh
-set -a
-source .env
-set +a
 ansible-playbook setup-my-mac.yml -i inventory --tags ssh
 ```
 
 To run only the GitHub key upload role:
 
 ```sh
-set -a
-source .env
-set +a
 ansible-playbook setup-my-mac.yml -i inventory --tags github_keys
 ```
 
 To preview changes without applying them (dry-run):
 
 ```sh
-set -a
-source .env
-set +a
 ansible-playbook setup-my-mac.yml -i inventory -K --check --diff
 ```
 
-You can customize setup editing `config.yml` config file.
+You can customize setup in `config.yml` and override private values in `config.local.yml`.
 
 
 ## ✨What this playbook do
@@ -66,9 +51,9 @@ The complete list of softwares installed is in `config.yml` , but in summary her
 
 - Manage dotfiles from this repository into $HOME/dotfiles and symlink them into $HOME.
 
-- Generate a GPG key (with passphrase from `.env`) and store the passphrase in macOS Keychain.
+- Generate a GPG key (with passphrase from `config.local.yml`) and store the passphrase in macOS Keychain.
 
-- Generate an SSH key (with passphrase from `.env`) and add it to the macOS Keychain.
+- Generate an SSH key (with passphrase from `config.local.yml`) and add it to the macOS Keychain.
 
 - Upload generated GPG and SSH public keys to GitHub using the `gh` CLI.
 

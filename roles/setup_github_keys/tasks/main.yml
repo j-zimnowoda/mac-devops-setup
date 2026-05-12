@@ -41,7 +41,7 @@
       - github_keys_effective_gpg_export_email | length > 0
       - github_keys_gpg_title | length > 0
       - github_keys_ssh_title | length > 0
-    fail_msg: "Set GPG_KEY_EMAIL (or GITCONFIG_EMAIL), or create a local secret key with an email UID before running GitHub key upload role."
+    fail_msg: "Set gpg_key_email (or gitconfig_email) in config.local.yml, or create a local secret key with an email UID before running GitHub key upload role."
   tags: github_keys
 
 - name: Ensure SSH public key exists before upload.

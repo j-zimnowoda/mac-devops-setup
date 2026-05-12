@@ -16,19 +16,19 @@ dotfiles_files:
   - .iterm2_shell_integration.zsh
   - .inputrc
 
-gitconfig_name: "{{ lookup('ansible.builtin.env', 'GITCONFIG_NAME', default='') }}"
-gitconfig_email: "{{ lookup('ansible.builtin.env', 'GITCONFIG_EMAIL', default='') }}"
-gitconfig_signingkey: "{{ lookup('ansible.builtin.env', 'GITCONFIG_SIGNINGKEY', default='') }}"
-gitconfig_github_user: "{{ lookup('ansible.builtin.env', 'GITCONFIG_GITHUB_USER', default='') }}"
+gitconfig_name: ""
+gitconfig_email: ""
+gitconfig_signingkey: ""
+gitconfig_github_user: ""
 
-gpg_key_name: "{{ lookup('ansible.builtin.env', 'GPG_KEY_NAME', default=gitconfig_name) }}"
-gpg_key_email: "{{ lookup('ansible.builtin.env', 'GPG_KEY_EMAIL', default=gitconfig_email) }}"
-gpg_key_passphrase: "{{ lookup('ansible.builtin.env', 'GPG_KEY_PASSPHRASE', default='') }}"
+gpg_key_name: "{{ gitconfig_name }}"
+gpg_key_email: "{{ gitconfig_email }}"
+gpg_key_passphrase: ""
 
-ssh_key_comment: "{{ lookup('ansible.builtin.env', 'SSH_KEY_COMMENT', default=gitconfig_email) }}"
-ssh_key_passphrase: "{{ lookup('ansible.builtin.env', 'SSH_KEY_PASSPHRASE', default='') }}"
-github_gpg_key_title: "{{ lookup('ansible.builtin.env', 'GH_GPG_KEY_TITLE', default='Mac DevOps GPG Key') }}"
-github_ssh_key_title: "{{ lookup('ansible.builtin.env', 'GH_SSH_KEY_TITLE', default='Mac DevOps SSH Key') }}"
+ssh_key_comment: "{{ gitconfig_email }}"
+ssh_key_passphrase: ""
+github_gpg_key_title: "Mac DevOps GPG Key"
+github_ssh_key_title: "Mac DevOps SSH Key"
 
 homebrew_installed_packages:
   # Dev

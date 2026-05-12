@@ -5,7 +5,7 @@
       - gpg_key_name | length > 0
       - gpg_key_email | length > 0
       - gpg_key_passphrase | length > 0
-    fail_msg: "Set GPG_KEY_NAME, GPG_KEY_EMAIL and GPG_KEY_PASSPHRASE in your .env file before running this role."
+    fail_msg: "Set gpg_key_name, gpg_key_email and gpg_key_passphrase in config.local.yml before running this role."
   tags: gpg
 
 - name: Check whether a secret key already exists for the configured email.

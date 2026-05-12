@@ -5,6 +5,17 @@
   vars_files:
     - config.yml
 
+  pre_tasks:
+    - name: Check whether local Ansible config file exists.
+      stat:
+        path: "{{ playbook_dir }}/config.local.yml"
+      register: local_config_file
+
+    - name: Load local Ansible config file when present.
+      include_vars:
+        file: "{{ playbook_dir }}/config.local.yml"
+      when: local_config_file.stat.exists
+
   roles:
     - role: setup_homebrew
     - role: setup_gpg

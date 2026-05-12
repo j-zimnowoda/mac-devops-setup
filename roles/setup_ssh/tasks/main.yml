@@ -4,7 +4,7 @@
     that:
       - ssh_key_comment | length > 0
       - ssh_key_passphrase | length > 0
-    fail_msg: "Set SSH_KEY_COMMENT and SSH_KEY_PASSPHRASE in your .env file before running this role."
+    fail_msg: "Set ssh_key_comment and ssh_key_passphrase in config.local.yml before running this role."
   tags: ssh
 
 - name: Ensure SSH directory exists.
