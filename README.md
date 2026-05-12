@@ -11,7 +11,7 @@ First of all clone or download this repository on you mac.
 Create `config.local.yml` from `config.local.yml.example`, update values, then run:
 
 ```sh
-ansible-playbook setup-my-mac.yml -i inventory -K
+ansible-playbook setup-my-mac.yml -i inventory
 ```
 
 To run only the GPG role:
@@ -35,8 +35,10 @@ ansible-playbook setup-my-mac.yml -i inventory --tags github_keys
 To preview changes without applying them (dry-run):
 
 ```sh
-ansible-playbook setup-my-mac.yml -i inventory -K --check --diff
+ansible-playbook setup-my-mac.yml -i inventory --check --diff
 ```
+
+Use `-K` only when running tasks that require privilege escalation.
 
 You can customize setup in `config.yml` and override private values in `config.local.yml`.
 

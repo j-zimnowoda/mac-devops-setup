@@ -4,7 +4,7 @@
     path: "{{ dotfiles_repo_local_destination }}"
     state: directory
     mode: "0755"
-  become: no
+  become: false
   tags: dotfiles
 
 - name: Discover all templates for dotfiles.
@@ -15,7 +15,7 @@
     file_type: file
   register: discovered_templates
   delegate_to: localhost
-  become: no
+  become: false
   tags: dotfiles
 
 - name: Initialize templated dotfiles list.
@@ -35,7 +35,7 @@
   command: git init "{{ dotfiles_repo_local_destination }}"
   args:
     creates: "{{ dotfiles_repo_local_destination }}/.git"
-  become: no
+  become: false
   tags: dotfiles
 
 - name: Ensure parent directories exist for templated dotfiles.
@@ -43,7 +43,7 @@
     path: "{{ dotfiles_repo_local_destination }}/{{ item }}"
     state: directory
     mode: "0755"
-  become: no
+  become: false
   loop: "{{ templated_dotfiles | map('dirname') | reject('equalto', '.') | unique | list }}"
   tags: dotfiles
 
@@ -63,6 +63,6 @@
     dest: "{{ dotfiles_home }}/{{ item }}"
     state: link
     force: true
-  become: no
+  become: false
   loop: "{{ templated_dotfiles | unique }}"
   tags: dotfiles

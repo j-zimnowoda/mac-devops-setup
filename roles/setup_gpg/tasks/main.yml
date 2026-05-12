@@ -13,7 +13,7 @@
   register: existing_gpg_keys
   changed_when: false
   failed_when: false
-  become: no
+  become: false
   tags: gpg
 
 - name: Generate GPG key when missing.
@@ -27,14 +27,14 @@
     {{ gpg_key_expire | quote }}
   when: "'sec:' not in existing_gpg_keys.stdout"
   no_log: true
-  become: no
+  become: false
   tags: gpg
 
 - name: Reload gpg-agent after config updates.
   command: gpgconf --kill gpg-agent
   changed_when: false
   failed_when: false
-  become: no
+  become: false
   tags: gpg
 
 - name: Store GPG passphrase in macOS Keychain.
@@ -46,5 +46,5 @@
     -U
   no_log: true
   changed_when: false
-  become: no
+  become: false
   tags: gpg
