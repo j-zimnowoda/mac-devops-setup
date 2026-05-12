@@ -44,6 +44,15 @@ set +a
 ansible-playbook setup-my-mac.yml -i inventory --tags github_keys
 ```
 
+To preview changes without applying them (dry-run):
+
+```sh
+set -a
+source .env
+set +a
+ansible-playbook setup-my-mac.yml -i inventory -K --check --diff
+```
+
 You can customize setup editing `config.yml` config file.
 
 

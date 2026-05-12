@@ -7,13 +7,28 @@
   become: no
   tags: dotfiles
 
-- name: Copy configured dotfiles from local source into managed directory.
-  copy:
-    src: "{{ dotfiles_source_local }}/{{ item }}"
-    dest: "{{ dotfiles_repo_local_destination }}/{{ item }}"
-    mode: preserve
+- name: Discover all templates for dotfiles.
+  find:
+    paths: "{{ role_path }}/templates"
+    recurse: true
+    hidden: true
+    file_type: file
+  register: discovered_templates
+  delegate_to: localhost
   become: no
-  loop: "{{ dotfiles_files | map('regex_replace', '/$', '') | reject('equalto', '.gitconfig') | reject('equalto', '.zshrc') | list }}"
+  tags: dotfiles
+
+- name: Initialize templated dotfiles list.
+  set_fact:
+    templated_dotfiles: []
+  tags: dotfiles
+
+- name: Build templated dotfiles list from templates directory.
+  set_fact:
+    templated_dotfiles: "{{ templated_dotfiles + [template_relpath] }}"
+  vars:
+    template_relpath: "{{ item.path.split('/templates/', 1)[1] }}"
+  loop: "{{ discovered_templates.files | sort(attribute='path') }}"
   tags: dotfiles
 
 - name: Ensure managed dotfiles directory is a git repository.
@@ -23,18 +38,23 @@
   become: no
   tags: dotfiles
 
-- name: Render templated .gitconfig into managed directory.
-  template:
-    src: gitconfig.j2
-    dest: "{{ dotfiles_repo_local_destination }}/.gitconfig"
-    mode: "0644"
+- name: Ensure parent directories exist for templated dotfiles.
+  file:
+    path: "{{ dotfiles_repo_local_destination }}/{{ item }}"
+    state: directory
+    mode: "0755"
+  become: no
+  loop: "{{ templated_dotfiles | map('dirname') | reject('equalto', '.') | unique | list }}"
   tags: dotfiles
 
-- name: Render templated .zshrc into managed directory.
+- name: Render discovered templates into managed directory.
   template:
-    src: .zshrc
-    dest: "{{ dotfiles_repo_local_destination }}/.zshrc"
+    src: "{{ template_relpath }}"
+    dest: "{{ dotfiles_repo_local_destination }}/{{ template_relpath }}"
     mode: "0644"
+  vars:
+    template_relpath: "{{ item.path.split('/templates/', 1)[1] }}"
+  loop: "{{ discovered_templates.files | sort(attribute='path') }}"
   tags: dotfiles
 
 - name: Link configured dotfiles into home folder.
@@ -44,5 +64,5 @@
     state: link
     force: true
   become: no
-  loop: "{{ (dotfiles_files | map('regex_replace', '/$', '') | list) + ['.gitconfig'] | unique }}"
+  loop: "{{ templated_dotfiles | unique }}"
   tags: dotfiles
