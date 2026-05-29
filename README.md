@@ -32,6 +32,21 @@ To run only the GitHub key upload role:
 ansible-playbook setup-my-mac.yml -i inventory --tags github_keys
 ```
 
+To run only the GitHub Enterprise key upload role:
+
+```sh
+ansible-playbook setup-my-mac.yml -i inventory --tags github_enterprise_keys
+```
+
+Uploading GitHub and GitHub Enterprise keys with the `gh` CLI requires extra token scopes.
+
+```sh
+gh auth refresh -h github.com -s write:gpg_key
+gh auth refresh -h github.com -s admin:public_key
+```
+
+For GitHub Enterprise, replace `github.com` with your enterprise hostname.
+
 To preview changes without applying them (dry-run):
 
 ```sh
@@ -58,6 +73,8 @@ The complete list of softwares installed is in `config.yml` , but in summary her
 - Generate an SSH key (with passphrase from `config.local.yml`) and add it to the macOS Keychain.
 
 - Upload generated GPG and SSH public keys to GitHub using the `gh` CLI.
+
+- Optionally upload generated GPG and SSH public keys to GitHub Enterprise by enabling `configure_github_enterprise_keys` and setting `github_enterprise_hostname`.
 
 - Configure terminal
 
