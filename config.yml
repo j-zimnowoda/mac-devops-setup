@@ -37,9 +37,11 @@ homebrew_installed_packages:
   - bash-completion@2
   - ca-certificates
   - coreutils
+  - copilot
   - curl
   - dive
   - doctl
+  - dyff
   - eksctl
   - gawk
   - gettext
@@ -68,6 +70,7 @@ homebrew_installed_packages:
   - kube-ps1
   - kubeconform
   - kustomize
+  - linode-cli
   - minikube
   - mas
   - moreutils
@@ -78,16 +81,16 @@ homebrew_installed_packages:
   - openapi-generator
   - openjdk
   - openldap
-  - openssl@1.1
   - php
+  - pipx
   - pinentry-mac
   - pkg-config
   - podman
-  - python@3.10
-  - python@3.8
-  - python@3.9
+  - python
   - qemu
   - readline
+  - ripgrep
+  - rsync
   - ruby
   - scw
   - shellcheck
@@ -110,8 +113,8 @@ homebrew_taps:
 homebrew_cask_appdir: /Applications
 homebrew_cask_apps:
   - alfred
+  - claude-code
   - docker
-  - dropbox # Client for the Dropbox cloud storage service
   - firefox
   - google-chrome
   - google-cloud-sdk
