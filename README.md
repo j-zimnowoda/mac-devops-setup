@@ -1,51 +1,42 @@
-# 💻 DevOps Mac OS automated setup 
+# 💻 DevOps Mac OS automated setup
 
-This ansible playbook install and setup most of softwares and utilities for my DevOps environment.
+This Ansible playbook installs and configures software and utilities for a DevOps environment on macOS.
 
-## 🚥 Installation 
+## 🚥 Installation
 
-First of all clone or download this repository on you mac.
+Clone this repository on your Mac, then install Ansible:
+
+```sh
+brew install ansible
+```
 
 ## 🚀 Usage
 
-Create `config.local.yml` from `config.local.yml.example`, update values, then run:
+### 1. Configure
+
+Copy the example config and fill in your values:
+
+```sh
+cp config.local.yml.example config.local.yml
+```
+
+Edit `config.local.yml`. Passphrases (`gpg_key_passphrase`, `ssh_key_passphrase`) are only required on first run — once keys are generated and stored in macOS Keychain, they can be removed. It is recommended to encrypt the file:
+
+```sh
+ansible-vault encrypt config.local.yml
+```
+
+### 2. Run
 
 ```sh
 ansible-playbook setup-my-mac.yml -i inventory
 ```
 
-To run only the GPG role:
+With an encrypted `config.local.yml`:
 
 ```sh
-ansible-playbook setup-my-mac.yml -i inventory --tags gpg
+ansible-playbook setup-my-mac.yml -i inventory --ask-vault-pass
 ```
-
-To run only the SSH role:
-
-```sh
-ansible-playbook setup-my-mac.yml -i inventory --tags ssh
-```
-
-To run only the GitHub key upload role:
-
-```sh
-ansible-playbook setup-my-mac.yml -i inventory --tags github_keys
-```
-
-To run only the GitHub Enterprise key upload role:
-
-```sh
-ansible-playbook setup-my-mac.yml -i inventory --tags github_enterprise_keys
-```
-
-Uploading GitHub and GitHub Enterprise keys with the `gh` CLI requires extra token scopes.
-
-```sh
-gh auth refresh -h github.com -s write:gpg_key
-gh auth refresh -h github.com -s admin:public_key
-```
-
-For GitHub Enterprise, replace `github.com` with your enterprise hostname.
 
 To preview changes without applying them (dry-run):
 
@@ -55,57 +46,59 @@ ansible-playbook setup-my-mac.yml -i inventory --check --diff
 
 Use `-K` only when running tasks that require privilege escalation.
 
-You can customize setup in `config.yml` and override private values in `config.local.yml`.
+### Selective runs
 
+Run only the GPG role:
 
-## ✨What this playbook do
+```sh
+ansible-playbook setup-my-mac.yml -i inventory --tags gpg
+```
 
-The complete list of softwares installed is in `config.yml` , but in summary here what the playbook do.
+Run only the SSH role:
 
-- Install homebrew and cask and install applications, utilities and quick look plugins. 
+```sh
+ansible-playbook setup-my-mac.yml -i inventory --tags ssh
+```
 
-    Docker, Vagrant, slack, 1password, postman,...
+Run only the GitHub key upload role:
 
-- Manage dotfiles from this repository into $HOME/dotfiles and symlink them into $HOME.
+```sh
+ansible-playbook setup-my-mac.yml -i inventory --tags github_keys
+```
 
-- Generate a GPG key (with passphrase from `config.local.yml`) and store the passphrase in macOS Keychain.
+Uploading keys to GitHub requires extra `gh` CLI token scopes:
 
-- Generate an SSH key (with passphrase from `config.local.yml`) and add it to the macOS Keychain.
+```sh
+gh auth refresh -h github.com -s write:gpg_key
+gh auth refresh -h github.com -s admin:public_key
+```
 
-- Upload generated GPG and SSH public keys to GitHub using the `gh` CLI.
+For GitHub Enterprise, replace `github.com` with your enterprise hostname.
 
-- Optionally upload generated GPG and SSH public keys to GitHub Enterprise by enabling `configure_github_enterprise_keys` and setting `github_enterprise_hostname`.
+## ✨ What this playbook does
 
-- Configure terminal
+The full list of packages is in `config.yml`. In summary:
 
-    Install iTerm2 (Solarized Dark theme, font-inconsolata)
-    Install Zsh and configure options with oh-my-zsh
+- **Homebrew** — installs packages, casks and taps (Docker, Slack, VSCode, iTerm2, …)
 
-- Configure Mac OS 
+- **Dotfiles** — renders templates from `roles/setup_dotfiles/templates/` into `~/dotfiles` and symlinks them into `$HOME`. Add a template file there and it is deployed automatically.
 
-    Show icons for hard drives, servers, and removable media on the desktop
-    Avoid creating .DS_Store files on network volumes
-    Finder: show status bar
-    Save screenshots in PNG format
-    Save screenshots to the Desktop/Screenshots folder
+- **GPG key** — generates an ed25519 GPG key using `gpg_key_name` and `gpg_key_email` from `config.local.yml`. Passphrase is stored in macOS Keychain on first run. `gitconfig_signingkey` in `.gitconfig` is resolved automatically from the keyring — no manual fingerprint copy required.
 
-## Improvements
+- **SSH key** — generates a key at `~/.ssh/{{ ssh_key_name }}`. Passphrase is added to macOS Keychain on first run. Set `ssh_key_name` in `config.local.yml` to choose the filename.
 
-Configure iTerm2 Profile with Solarized theme.
-Add config for sync settings VScode and Brave
-Configure VPN
+- **GitHub keys** — uploads GPG and SSH public keys to GitHub using the `gh` CLI. Enable `configure_github_enterprise_keys` and set `github_enterprise_hostname` to also upload to a GitHub Enterprise instance.
+
+- **Terminal** — installs oh-my-zsh.
+
+- **macOS preferences** — sets system defaults (Finder, screenshots, Dock, etc.).
 
 ## Testing the Playbook
 
-Use Mac virtualbox https://github.com/geerlingguy/macos-virtualbox-vm
+Use Mac VirtualBox: https://github.com/geerlingguy/macos-virtualbox-vm
 
 ## See also
 
-- https://blog.vandenbrand.org/2016/01/04/how-to-automate-your-mac-os-x-setup-with-ansible/
-- http://www.nickhammond.com/automating-development-environment-ansible/
-- https://github.com/simplycycling/ansible-mac-dev-setup/blob/master/main.yml
-- https://github.com/mas-cli/mas
 - https://github.com/geerlingguy/mac-dev-playbook
-- https://github.com/osxc
-- https://github.com/MWGriffin/ansible-playbooks/blob/master/sourcetree/sourcetree.yaml   
+- https://github.com/mas-cli/mas
 - https://github.com/sindresorhus/quick-look-plugins
