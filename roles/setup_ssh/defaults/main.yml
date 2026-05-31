@@ -1,7 +1,7 @@
 ---
 ssh_home: "{{ ansible_facts['env']['HOME'] | default(lookup('ansible.builtin.env', 'HOME')) }}"
 ssh_dir: "{{ ssh_home }}/.ssh"
-ssh_key_path: "{{ ssh_dir }}/id_ed25519"
+ssh_key_path: "{{ ssh_dir }}/{{ ssh_key_name }}"
 ssh_key_type: "ed25519"
 ssh_key_comment: ""
 ssh_key_passphrase: ""

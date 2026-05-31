@@ -1,13 +1,13 @@
 ---
 gitconfig_name: "Your Name"
 gitconfig_email: "you@example.com"
-gitconfig_signingkey: "YOUR_GPG_KEY_ID"
 gitconfig_github_user: "your-github-username"
 
 gpg_key_name: "Your Name"
 gpg_key_email: "you@example.com"
 gpg_key_passphrase: "change-me"
 
+ssh_key_name: "id_ed25519"
 ssh_key_comment: "you@example.com"
 ssh_key_passphrase: "change-me"
 

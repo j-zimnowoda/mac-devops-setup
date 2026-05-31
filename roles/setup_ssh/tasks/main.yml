@@ -2,9 +2,10 @@
 - name: Validate required SSH key variables.
   assert:
     that:
+      - ssh_key_name | default('') | length > 0
       - ssh_key_comment | length > 0
       - ssh_key_passphrase | length > 0
-    fail_msg: "Set ssh_key_comment and ssh_key_passphrase in config.local.yml before running this role."
+    fail_msg: "Set ssh_key_name, ssh_key_comment and ssh_key_passphrase in config.local.yml before running this role."
   tags: ssh
 
 - name: Ensure SSH directory exists.

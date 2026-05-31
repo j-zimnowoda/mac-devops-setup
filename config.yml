@@ -11,7 +11,6 @@ dotfiles_repo_local_destination: "{{ dotfiles_host_home }}/dotfiles"
 
 # gitconfig_name: ""
 # gitconfig_email: ""
-# gitconfig_signingkey: ""
 # gitconfig_github_user: ""
 
 # gpg_key_name: "{{ gitconfig_name }}"

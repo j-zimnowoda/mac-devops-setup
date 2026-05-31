@@ -47,6 +47,29 @@
   loop: "{{ templated_dotfiles | map('dirname') | reject('equalto', '.') | unique | list }}"
   tags: dotfiles
 
+- name: Look up GPG signing key fingerprint from keyring.
+  shell: >
+    gpg --list-keys --with-colons {{ gpg_key_name | quote }} 2>/dev/null |
+    awk -F: '/^fpr/{print $10; exit}'
+  register: _gpg_signing_key_lookup
+  changed_when: false
+  failed_when: false
+  become: false
+  when:
+    - gitconfig_signingkey | length == 0
+    - gpg_key_name | default('') | length > 0
+  tags: dotfiles
+
+- name: Set gitconfig_signingkey from keyring.
+  set_fact:
+    gitconfig_signingkey: "{{ _gpg_signing_key_lookup.stdout | trim }}"
+  when:
+    - gitconfig_signingkey | length == 0
+    - _gpg_signing_key_lookup is defined
+    - _gpg_signing_key_lookup.rc | default(1) == 0
+    - _gpg_signing_key_lookup.stdout | trim | length > 0
+  tags: dotfiles
+
 - name: Render discovered templates into managed directory.
   template:
     src: "{{ template_relpath }}"
