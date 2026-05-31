@@ -1,11 +1,24 @@
 ---
-- name: Validate required SSH key variables.
+- name: Validate always-required SSH key variables.
   assert:
     that:
       - ssh_key_name | default('') | length > 0
+    fail_msg: "Set ssh_key_name in config.local.yml before running this role."
+  tags: ssh
+
+- name: Check whether SSH private key already exists.
+  stat:
+    path: "{{ ssh_key_path }}"
+  register: ssh_key_stat
+  tags: ssh
+
+- name: Validate SSH key generation variables when key is missing.
+  assert:
+    that:
       - ssh_key_comment | length > 0
       - ssh_key_passphrase | length > 0
-    fail_msg: "Set ssh_key_name, ssh_key_comment and ssh_key_passphrase in config.local.yml before running this role."
+    fail_msg: "Set ssh_key_comment and ssh_key_passphrase in config.local.yml before running this role."
+  when: not ssh_key_stat.stat.exists
   tags: ssh
 
 - name: Ensure SSH directory exists.

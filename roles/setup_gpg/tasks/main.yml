@@ -1,11 +1,10 @@
 ---
-- name: Validate required GPG key variables.
+- name: Validate always-required GPG variables.
   assert:
     that:
       - gpg_key_name | length > 0
       - gpg_key_email | length > 0
-      - gpg_key_passphrase | length > 0
-    fail_msg: "Set gpg_key_name, gpg_key_email and gpg_key_passphrase in config.local.yml before running this role."
+    fail_msg: "Set gpg_key_name and gpg_key_email in config.local.yml before running this role."
   tags: gpg
 
 - name: Check whether a secret key already exists for the configured email.
@@ -14,6 +13,24 @@
   changed_when: false
   failed_when: false
   become: false
+  tags: gpg
+
+- name: Check whether GPG passphrase is already stored in macOS Keychain.
+  command: security find-generic-password -a "{{ ansible_facts['user_id'] }}" -s "{{ gpg_keychain_service_name }}"
+  register: gpg_keychain_check
+  changed_when: false
+  failed_when: false
+  become: false
+  tags: gpg
+
+- name: Validate GPG passphrase when key or Keychain entry is missing.
+  assert:
+    that:
+      - gpg_key_passphrase | default('') | length > 0
+    fail_msg: "Set gpg_key_passphrase in config.local.yml before running this role."
+  when: >-
+    ('sec:' not in existing_gpg_keys.stdout) or
+    (gpg_keychain_check.rc != 0)
   tags: gpg
 
 - name: Generate GPG key when missing.
@@ -47,4 +64,5 @@
   no_log: true
   changed_when: false
   become: false
+  when: gpg_keychain_check.rc != 0
   tags: gpg
