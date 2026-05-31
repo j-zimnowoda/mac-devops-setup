@@ -11,6 +11,8 @@
   register: gh_auth_status
   changed_when: false
   failed_when: gh_auth_status.rc != 0
+  environment:
+    GH_HOST: "{{ github_keys_host }}"
   tags: github_keys
 
 - name: Inspect local secret keys when GPG export email is not set.
@@ -75,6 +77,8 @@
   register: github_existing_gpg_keys
   changed_when: false
   failed_when: false
+  environment:
+    GH_HOST: "{{ github_keys_host }}"
   tags: github_keys
 
 - name: Write exported GPG key to temporary file.
@@ -99,6 +103,8 @@
   when:
     - not ansible_check_mode
     - github_gpg_public_key.stdout | trim not in github_existing_gpg_keys.stdout
+  environment:
+    GH_HOST: "{{ github_keys_host }}"
   tags: github_keys
 
 - name: Query GitHub SSH keys.
@@ -106,6 +112,8 @@
   register: github_existing_ssh_keys
   changed_when: false
   failed_when: false
+  environment:
+    GH_HOST: "{{ github_keys_host }}"
   tags: github_keys
 
 - name: Upload SSH key to GitHub when missing.
@@ -116,6 +124,8 @@
   when:
     - not ansible_check_mode
     - (github_ssh_pubkey_content.content | b64decode | trim) not in github_existing_ssh_keys.stdout
+  environment:
+    GH_HOST: "{{ github_keys_host }}"
   tags: github_keys
 
 - name: Remove temporary exported GPG key file.
