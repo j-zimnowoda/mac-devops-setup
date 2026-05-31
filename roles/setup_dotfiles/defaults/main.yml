@@ -1,19 +1,8 @@
 ---
-dotfiles_source_local: "{{ playbook_dir }}/dotfiles"
 dotfiles_host_home: "{{ ansible_facts['env']['HOME'] | default(lookup('ansible.builtin.env', 'HOME')) }}"
 dotfiles_repo_local_destination: "{{ dotfiles_host_home }}/dotfiles"
 
 dotfiles_home: "{{ dotfiles_host_home }}"
-dotfiles_files:
-  - .aliases
-  - .zshrc
-  - .gitignore_global
-  - .vimrc
-  - .vim
-  - .osx
-  - .functions
-  - .vscode/
-  - .gnupg/
 
 gitconfig_name: ""
 gitconfig_email: ""

@@ -8,14 +8,6 @@ configure_github_keys: yes
 configure_github_enterprise_keys: yes
 
 dotfiles_repo_local_destination: "{{ dotfiles_host_home }}/dotfiles"
-dotfiles_files:
-  - .aliases
-  - .zshrc
-  - .vimrc
-  - .osx
-  - .functions
-  - .iterm2_shell_integration.zsh
-  - .inputrc
 
 # gitconfig_name: ""
 # gitconfig_email: ""
