@@ -1,8 +1,8 @@
-# 💻 DevOps Mac OS automated setup
+# DevOps Mac OS automated setup
 
 This Ansible playbook installs and configures software and utilities for a DevOps environment on macOS.
 
-## 🚥 Installation
+## Installation
 
 Clone this repository on your Mac, then install Ansible:
 
@@ -10,7 +10,7 @@ Clone this repository on your Mac, then install Ansible:
 brew install ansible
 ```
 
-## 🚀 Usage
+## Usage
 
 ### 1. Configure
 
@@ -75,7 +75,7 @@ gh auth refresh -h github.com -s admin:public_key
 
 For GitHub Enterprise, replace `github.com` with your enterprise hostname.
 
-## ✨ What this playbook does
+## What this playbook does
 
 The full list of packages is in `config.yml`. In summary:
 
@@ -92,13 +92,3 @@ The full list of packages is in `config.yml`. In summary:
 - **Terminal** — installs oh-my-zsh.
 
 - **macOS preferences** — sets system defaults (Finder, screenshots, Dock, etc.).
-
-## Testing the Playbook
-
-Use Mac VirtualBox: https://github.com/geerlingguy/macos-virtualbox-vm
-
-## See also
-
-- https://github.com/geerlingguy/mac-dev-playbook
-- https://github.com/mas-cli/mas
-- https://github.com/sindresorhus/quick-look-plugins
