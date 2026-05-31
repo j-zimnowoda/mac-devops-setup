@@ -1,0 +1,3 @@
+# gitconfig_signingkey is auto-resolved from the GPG keyring
+
+`gitconfig_signingkey` is not set in `config.local.yml`. The `setup_dotfiles` role looks it up at template render time by running `gpg --list-keys --with-colons` against `gpg_key_name` and extracting the fingerprint. This removes a manual copy-paste step that previously required the user to run `gpg --list-keys`, find the fingerprint, and add it to config before dotfiles could be rendered correctly. The resolution happens in `setup_dotfiles` rather than `setup_gpg` so that it works on any run regardless of whether the GPG role executed — the keyring is the source of truth.
