@@ -26,13 +26,14 @@ function _qq-get-apl-creds {
 
   local host="https://$(kubectl get httproute -n otomi console -o jsonpath='{.spec.hostnames[0]}')"
   local gitServerUrl="https://$(kubectl get httproute -n git-server git-server -o jsonpath='{.spec.hostnames[0]}')"
+  local gitRepoUrl="$gitServerUrl/otomi.values.git"
   local username=$(kubectl get secret platform-admin-initial-credentials -n keycloak -o jsonpath='{.data.username}' | base64 -d)
   local password=$(kubectl get secret platform-admin-initial-credentials -n keycloak -o jsonpath='{.data.password}' | base64 -d)
-  local gitPassword=$(kubectl get secret otomi-api-git-credentials -n otomi -o jsonpath='{.data.GIT_PASSWORD}' | base64 -d)
+  local gitPassword=$(kubectl get secret -n apl-secrets apl-git-config -o jsonpath='{.data.password}' | base64 -d)
 
   echo "Host: $host"
   echo "Username: $username"
   echo "Password: $password"
-  echo "Git URL: $gitServerUrl"
+  echo "Git URL: $gitRepoUrl"
   echo "Git password: $gitPassword"
 }
