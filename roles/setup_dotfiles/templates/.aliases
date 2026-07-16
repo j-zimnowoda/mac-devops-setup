@@ -25,15 +25,13 @@ function _qq-get-apl-creds {
   [[ -z "${KUBECONFIG}" ]] && echo "KUBECONFIG is not exported" && return 1
 
   local host="https://$(kubectl get httproute -n otomi console -o jsonpath='{.spec.hostnames[0]}')"
-  local gitServerUrl="https://$(kubectl get httproute -n git-server git-server -o jsonpath='{.spec.hostnames[0]}')"
-  local gitRepoUrl="$gitServerUrl/otomi/values.git"
   local username=$(kubectl get secret platform-admin-initial-credentials -n keycloak -o jsonpath='{.data.username}' | base64 -d)
   local password=$(kubectl get secret platform-admin-initial-credentials -n keycloak -o jsonpath='{.data.password}' | base64 -d)
-  local gitPassword=$(kubectl get secret -n apl-secrets apl-git-config -o jsonpath='{.data.password}' | base64 -d)
+  local gitCloneCmd=$(kubectl get secret -n apl-secrets apl-git-config -ojsonpath='{.data.gitCloneCmd}' | base64 --decode)
 
   echo "Host: $host"
   echo "Username: $username"
   echo "Password: $password"
-  echo "Git URL: $gitRepoUrl"
-  echo "Git password: $gitPassword"
+  echo "Git clone cmd:"
+  echo "git clone $gitCloneCmd"
 }

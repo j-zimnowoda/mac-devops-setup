@@ -75,6 +75,8 @@ homebrew_installed_packages:
   - mas
   - moreutils
   - mpdecimal
+  - mysql-client
+  - pkg-config
   - nmap
   - node
   - nvm
@@ -87,6 +89,8 @@ homebrew_installed_packages:
   - pkg-config
   - podman
   - python
+  - pytest
+  - pyenv
   - qemu
   - readline
   - ripgrep

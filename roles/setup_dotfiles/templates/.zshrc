@@ -75,3 +75,10 @@ export PATH="/opt/homebrew/opt/mysql-client/bin:$PATH"
 
 # OpenCode Dockerized completion
 [ -f "$HOME/workspace/opencode-devops-toolkit/completions/zsh.sh" ] && source "$HOME/workspace/opencode-devops-toolkit/completions/zsh.sh"
+
+export PATH="/opt/homebrew/opt/mysql-client/bin:$PATH"
+# For compilers to find mysql-client you may need to set:
+export LDFLAGS="-L/opt/homebrew/opt/mysql-client/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/mysql-client/include"
+# For pkgconf to find mysql-client you may need to set:
+export PKG_CONFIG_PATH="/opt/homebrew/opt/mysql-client/lib/pkgconfig"
